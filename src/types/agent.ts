@@ -1,3 +1,5 @@
+import type { AgentObservability } from './observability'
+
 export type AgentStatus = 'active' | 'inactive' | 'degraded' | 'maintenance';
 export type AgentSource = 'dayforce' | 'custom';
 export type AgentCategory =
@@ -87,6 +89,9 @@ export interface Agent {
   performanceHistory: PerformanceMetric[];
   valueHistory: ValueMetric[];
   auditLog: AuditEntry[];
+
+  // OTel-based observability data
+  observability: AgentObservability;
 }
 
 export interface AgentFormData {

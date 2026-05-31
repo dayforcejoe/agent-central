@@ -48,6 +48,13 @@ function buildNewAgent(data: AgentFormData, id: string): Agent {
     permissions: [],
     performanceHistory: [],
     valueHistory: [],
+    observability: {
+      recentTraces: [], tokenUsageHistory: [], toolCallMetrics: [],
+      userSessionMetrics: [], hourlyInvocations: [], finishReasonBreakdown: [],
+      latencyPercentiles: { p50: 0, p75: 0, p95: 0, p99: 0 },
+      totalSessions30d: 0, totalConversations30d: 0, totalTokenCost30dUsd: 0,
+      escalationRate: 0, csat: 0, topicBreakdown: [],
+    },
     auditLog: [
       {
         id: `${id}-create`,

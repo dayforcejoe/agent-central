@@ -1,15 +1,49 @@
+/* ── Everest Design System — Plus Jakarta Sans (Clarika proxy) ─────────── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  * {
-    box-sizing: border-box;
+  :root {
+    /* Everest CSS custom properties for non-Tailwind contexts */
+    --evr-surface-root:       #f8f6f6;
+    --evr-surface-primary:    #ffffff;
+    --evr-surface-secondary:  #f2f0f0;
+    --evr-text-high:          #1f1f23;
+    --evr-text-default:       #46464a;
+    --evr-text-low:           #5e5e62;
+    --evr-blue-400:           #3067db;
+    --evr-blue-500:           #1f45b2;
+    --evr-success:            #078d79;
+    --evr-error:              #c64e33;
+    --evr-warning:            #efc056;
+    --evr-border-decorative:  #e1e2ed;
+    --evr-border-primary:     #919094;
+    --evr-shadow-02:          0 1px 4px rgba(31,31,35,0.08);
+    --evr-shadow-04:          0 2px 8px rgba(31,31,35,0.12);
   }
+
+  * { box-sizing: border-box; }
+
+  html { font-size: 16px; }
+
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: var(--evr-surface-root);
+    color: var(--evr-text-default);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+
+  /* Focus visible ring — Everest 2px brand-blue */
+  *:focus-visible {
+    outline: 2px solid var(--evr-blue-400);
+    outline-offset: 1px;
+    border-radius: 4px;
+  }
+  *:focus:not(:focus-visible) { outline: none; }
 }
 
 @layer utilities {
@@ -17,13 +51,37 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+  /* Everest card hover — darken surface, warm shadow, NO transform */
+  .evr-card-hover {
+    transition: box-shadow 150ms cubic-bezier(0.4,0,0.2,1),
+                background-color 150ms cubic-bezier(0.4,0,0.2,1);
   }
-  .card-hover {
-    @apply transition-all duration-200 ease-out;
+  .evr-card-hover:hover {
+    background-color: var(--evr-surface-hovered, #f5f3f3);
+    box-shadow: var(--evr-shadow-04);
   }
-  .card-hover:hover {
-    @apply shadow-xl -translate-y-1;
+
+  /* Category left-border accent strip */
+  .cat-accent-payroll     { border-left: 3px solid #3067db; }
+  .cat-accent-workforce   { border-left: 3px solid #0a9e8a; }
+  .cat-accent-compliance  { border-left: 3px solid #c64e33; }
+  .cat-accent-talent      { border-left: 3px solid #7c3aed; }
+  .cat-accent-analytics   { border-left: 3px solid #1d7fcc; }
+  .cat-accent-onboarding  { border-left: 3px solid #d4900a; }
+  .cat-accent-benefits    { border-left: 3px solid #b53068; }
+  .cat-accent-performance { border-left: 3px solid #596ae1; }
+
+  /* Status dot pulse (live indicator) */
+  .live-dot::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #078d79;
+    margin-right: 6px;
+    animation: pulseDot 2s ease-in-out infinite;
   }
 }

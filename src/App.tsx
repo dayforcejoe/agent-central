@@ -3,6 +3,7 @@ import { AgentsProvider } from './context/AgentsContext'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import AgentDetail from './pages/AgentDetail'
+import Observability from './pages/Observability'
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/agents/:id" element={<AgentDetail />} />
+            <Route path="/observability" element={<Observability />} />
           </Routes>
         </Layout>
       </AgentsProvider>

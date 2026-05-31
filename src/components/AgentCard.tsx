@@ -1,26 +1,29 @@
 import { useNavigate } from 'react-router-dom'
 import {
   Calculator, Users, Shield, Star, BarChart2, Briefcase, Heart, TrendingUp,
-  CheckCircle2, AlertTriangle, XCircle, Clock, ArrowRight, Edit2, Zap,
+  CheckCircle2, AlertTriangle, XCircle, Clock, ArrowRight, Edit2,
 } from 'lucide-react'
 import type { Agent, AgentCategory, AgentStatus } from '../types/agent'
 
-const categoryConfig: Record<AgentCategory, { gradient: string; icon: React.ElementType; label: string }> = {
-  payroll:     { gradient: 'from-blue-500 to-blue-700',    icon: Calculator,  label: 'Payroll' },
-  workforce:   { gradient: 'from-teal-500 to-teal-700',    icon: Users,       label: 'Workforce' },
-  compliance:  { gradient: 'from-red-500 to-rose-700',     icon: Shield,      label: 'Compliance' },
-  talent:      { gradient: 'from-purple-500 to-violet-700',icon: Star,        label: 'Talent' },
-  analytics:   { gradient: 'from-emerald-500 to-green-700',icon: BarChart2,   label: 'Analytics' },
-  onboarding:  { gradient: 'from-orange-500 to-amber-700', icon: Briefcase,   label: 'Onboarding' },
-  benefits:    { gradient: 'from-pink-500 to-rose-700',    icon: Heart,       label: 'Benefits' },
-  performance: { gradient: 'from-violet-500 to-purple-700',icon: TrendingUp,  label: 'Performance' },
+// ── Everest-aligned category config ──────────────────────────────────────
+const catCfg: Record<AgentCategory, {
+  icon: React.ElementType; label: string; color: string; tint: string; accent: string
+}> = {
+  payroll:     { icon: Calculator, label: 'Payroll',      color: '#3067db', tint: '#ebf0fc', accent: 'cat-accent-payroll' },
+  workforce:   { icon: Users,      label: 'Workforce',    color: '#0a9e8a', tint: '#e5f7f5', accent: 'cat-accent-workforce' },
+  compliance:  { icon: Shield,     label: 'Compliance',   color: '#c64e33', tint: '#fdf0ed', accent: 'cat-accent-compliance' },
+  talent:      { icon: Star,       label: 'Talent',       color: '#7c3aed', tint: '#f0eafb', accent: 'cat-accent-talent' },
+  analytics:   { icon: BarChart2,  label: 'Analytics',    color: '#1d7fcc', tint: '#e8f3fc', accent: 'cat-accent-analytics' },
+  onboarding:  { icon: Briefcase,  label: 'Onboarding',   color: '#d4900a', tint: '#fdf8ec', accent: 'cat-accent-onboarding' },
+  benefits:    { icon: Heart,      label: 'Benefits',     color: '#b53068', tint: '#fceef3', accent: 'cat-accent-benefits' },
+  performance: { icon: TrendingUp, label: 'Performance',  color: '#596ae1', tint: '#eef0fe', accent: 'cat-accent-performance' },
 }
 
-const statusConfig: Record<AgentStatus, { icon: React.ElementType; label: string; color: string; bg: string }> = {
-  active:      { icon: CheckCircle2,   label: 'Active',       color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
-  inactive:    { icon: XCircle,        label: 'Inactive',     color: 'text-slate-500',   bg: 'bg-slate-50 border-slate-200' },
-  degraded:    { icon: AlertTriangle,  label: 'Degraded',     color: 'text-amber-700',   bg: 'bg-amber-50 border-amber-200' },
-  maintenance: { icon: Clock,          label: 'Maintenance',  color: 'text-blue-700',    bg: 'bg-blue-50 border-blue-200' },
+const statusCfg: Record<AgentStatus, { icon: React.ElementType; label: string; color: string; bg: string }> = {
+  active:      { icon: CheckCircle2,  label: 'Active',       color: '#078d79', bg: '#e6f5f2' },
+  inactive:    { icon: XCircle,       label: 'Inactive',     color: '#5e5e62', bg: '#f2f0f0' },
+  degraded:    { icon: AlertTriangle, label: 'Degraded',     color: '#985d10', bg: '#fdf8ec' },
+  maintenance: { icon: Clock,         label: 'Maintenance',  color: '#3067db', bg: '#ebf0fc' },
 }
 
 function fmt(n: number): string {
@@ -36,102 +39,108 @@ interface AgentCardProps {
 
 export default function AgentCard({ agent, onEdit }: AgentCardProps) {
   const navigate = useNavigate()
-  const cat = categoryConfig[agent.category]
-  const status = statusConfig[agent.status]
+  const cat = catCfg[agent.category]
+  const st = statusCfg[agent.status]
   const Icon = cat.icon
-  const StatusIcon = status.icon
+  const StatusIcon = st.icon
 
   return (
-    <div className="group relative w-64 flex-shrink-0 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden card-hover cursor-pointer">
-      {/* Card top gradient band */}
-      <div
-        className={`bg-gradient-to-br ${cat.gradient} relative h-36 flex flex-col items-center justify-center`}
-        onClick={() => navigate(`/agents/${agent.id}`)}
-      >
-        {/* Source badge */}
-        <div className="absolute top-3 left-3">
-          {agent.source === 'dayforce' ? (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/20 text-white backdrop-blur-sm border border-white/30 tracking-wide">
-              DAYFORCE
-            </span>
-          ) : (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/20 text-white backdrop-blur-sm border border-white/30 tracking-wide">
-              CUSTOM
-            </span>
-          )}
+    <div
+      className={`group relative w-60 flex-shrink-0 bg-white rounded-evr-md border border-evr-border-decorative overflow-hidden cursor-pointer
+        ${cat.accent} transition-all duration-150 hover:shadow-evr-04`}
+      onClick={() => navigate(`/agents/${agent.id}`)}
+      style={{ borderLeft: `3px solid ${cat.color}` }}
+    >
+      {/* Card header */}
+      <div className="p-4 pb-3">
+        <div className="flex items-start gap-3">
+          {/* Category icon with tinted background — Everest Highlighted Icon pattern */}
+          <div
+            className="w-9 h-9 rounded-evr-sm flex items-center justify-center shrink-0 mt-0.5"
+            style={{ backgroundColor: cat.tint }}
+          >
+            <Icon size={18} style={{ color: cat.color }} />
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 mb-0.5">
+              {/* Status dot */}
+              <span
+                className="w-2 h-2 rounded-full shrink-0"
+                style={{ backgroundColor: st.color,
+                  boxShadow: agent.status === 'active' ? `0 0 0 3px ${cat.tint}` : undefined }}
+              />
+              <h3 className="text-sm font-semibold text-evr-text-high truncate leading-tight group-hover:text-evr-blue-400 transition-colors">
+                {agent.name}
+              </h3>
+            </div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: cat.color }}>
+                {cat.label}
+              </span>
+              <span className="text-evr-border-subtle text-[10px]">·</span>
+              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
+                agent.source === 'dayforce' ? 'text-evr-blue-400 bg-evr-blue-tint' : 'text-evr-text-low bg-evr-surface-secondary'
+              }`}>
+                {agent.source === 'dayforce' ? 'Dayforce' : 'Custom'}
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Status dot */}
-        <div className="absolute top-3 right-3">
-          <span className={`w-2.5 h-2.5 rounded-full block ${
-            agent.status === 'active' ? 'bg-emerald-400 shadow-lg shadow-emerald-400/60' :
-            agent.status === 'degraded' ? 'bg-amber-400 shadow-lg shadow-amber-400/60' :
-            agent.status === 'maintenance' ? 'bg-blue-300 shadow-lg shadow-blue-300/60' :
-            'bg-slate-400'
-          }`} />
-        </div>
-
-        {/* Category icon */}
-        <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center mb-2 shadow-lg">
-          <Icon className="text-white" size={26} />
-        </div>
-
-        {/* Category label */}
-        <span className="text-white/80 text-xs font-medium tracking-wide uppercase">{cat.label}</span>
+        {/* Description */}
+        <p className="text-xs text-evr-text-low mt-2.5 leading-relaxed line-clamp-2">
+          {agent.description}
+        </p>
       </div>
 
-      {/* Card body */}
-      <div className="p-4 flex flex-col gap-3" onClick={() => navigate(`/agents/${agent.id}`)}>
-        <div>
-          <h3 className="font-semibold text-slate-900 text-sm leading-snug line-clamp-1 group-hover:text-blue-700 transition-colors">
-            {agent.name}
-          </h3>
-          <p className="text-xs text-slate-500 mt-1 leading-relaxed line-clamp-2">
-            {agent.description}
-          </p>
-        </div>
+      {/* Divider */}
+      <div className="border-t border-evr-border-decorative mx-4" />
 
-        {/* Status badge */}
-        <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs font-medium self-start ${status.bg} ${status.color}`}>
-          <StatusIcon size={11} />
-          {status.label}
-        </div>
+      {/* Stats */}
+      <div className="px-4 py-3 grid grid-cols-2 gap-2">
+        {[
+          { label: 'Tasks', value: agent.totalTasksCompleted > 0 ? fmt(agent.totalTasksCompleted) : '—' },
+          { label: 'Success', value: agent.successRate > 0 ? `${agent.successRate}%` : '—' },
+          { label: 'Users', value: agent.activeUsers > 0 ? String(agent.activeUsers) : '—' },
+          { label: 'Value', value: agent.totalCostSavings > 0 ? `$${fmt(agent.totalCostSavings)}` : '—' },
+        ].map(s => (
+          <div key={s.label} className="bg-evr-surface-secondary rounded-evr-sm px-2 py-1.5">
+            <div className="text-[10px] text-evr-text-low">{s.label}</div>
+            <div className="text-sm font-bold text-evr-text-high leading-tight">{s.value}</div>
+          </div>
+        ))}
+      </div>
 
-        {/* Quick stats */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="bg-slate-50 rounded-lg p-2 text-center">
-            <div className="text-sm font-bold text-slate-900">{fmt(agent.totalTasksCompleted)}</div>
-            <div className="text-[10px] text-slate-500 leading-tight">Tasks Done</div>
-          </div>
-          <div className="bg-slate-50 rounded-lg p-2 text-center">
-            <div className="text-sm font-bold text-slate-900">{agent.successRate > 0 ? `${agent.successRate}%` : '—'}</div>
-            <div className="text-[10px] text-slate-500 leading-tight">Success Rate</div>
-          </div>
-          <div className="bg-slate-50 rounded-lg p-2 text-center">
-            <div className="text-sm font-bold text-slate-900">{agent.activeUsers > 0 ? agent.activeUsers : '—'}</div>
-            <div className="text-[10px] text-slate-500 leading-tight">Active Users</div>
-          </div>
-          <div className="bg-slate-50 rounded-lg p-2 text-center">
-            <div className="text-sm font-bold text-slate-900">{agent.totalCostSavings > 0 ? `$${fmt(agent.totalCostSavings)}` : '—'}</div>
-            <div className="text-[10px] text-slate-500 leading-tight">Value</div>
-          </div>
-        </div>
+      {/* Status badge */}
+      <div className="px-4 pb-3">
+        <span
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium"
+          style={{ color: st.color, backgroundColor: st.bg }}
+        >
+          <StatusIcon size={10} />
+          {st.label}
+        </span>
       </div>
 
       {/* Hover action bar */}
-      <div className="absolute inset-x-0 bottom-0 bg-white border-t border-slate-100 flex opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <div className="absolute inset-x-0 bottom-0 flex border-t border-evr-border-decorative bg-white
+        opacity-0 group-hover:opacity-100 transition-opacity duration-150">
         <button
           onClick={e => { e.stopPropagation(); onEdit(agent) }}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors border-r border-slate-100"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium
+            text-evr-text-default hover:bg-evr-surface-secondary transition-colors border-r border-evr-border-decorative"
         >
-          <Edit2 size={12} />
+          <Edit2 size={11} />
           Edit
         </button>
         <button
           onClick={e => { e.stopPropagation(); navigate(`/agents/${agent.id}`) }}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium transition-colors"
+          style={{ color: '#3067db' }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#ebf0fc')}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
         >
-          <Zap size={12} />
           Review
           <ArrowRight size={11} />
         </button>

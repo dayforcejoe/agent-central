@@ -1,4 +1,4 @@
-import { Bot, CheckCircle2, Zap, DollarSign, TrendingUp, AlertTriangle } from 'lucide-react'
+import { Bot, CheckCircle2, Zap, TrendingUp, DollarSign, AlertTriangle } from 'lucide-react'
 import type { Agent } from '../types/agent'
 
 function fmt(n: number): string {
@@ -7,69 +7,65 @@ function fmt(n: number): string {
   return String(n)
 }
 
-interface StatsBarProps {
-  agents: Agent[]
-}
-
-export default function StatsBar({ agents }: StatsBarProps) {
-  const totalAgents = agents.length
-  const activeAgents = agents.filter(a => a.status === 'active').length
-  const degradedAgents = agents.filter(a => a.status === 'degraded').length
+export default function StatsBar({ agents }: { agents: Agent[] }) {
+  const total = agents.length
+  const active = agents.filter(a => a.status === 'active').length
+  const degraded = agents.filter(a => a.status === 'degraded').length
   const totalTasks = agents.reduce((s, a) => s + a.totalTasksCompleted, 0)
   const totalSavings = agents.reduce((s, a) => s + a.totalCostSavings, 0)
   const totalHours = agents.reduce((s, a) => s + a.totalHoursSaved, 0)
-  const avgSuccess = agents.filter(a => a.successRate > 0).reduce((s, a, _, arr) => s + a.successRate / arr.length, 0)
-
   const todayTasks = agents.reduce((s, a) => {
-    const hist = a.performanceHistory
-    return s + (hist.length > 0 ? hist[hist.length - 1].tasksCompleted : 0)
+    const h = a.performanceHistory
+    return s + (h.length > 0 ? h[h.length - 1].tasksCompleted : 0)
   }, 0)
+  const avgSuccess = agents.filter(a => a.successRate > 0)
+    .reduce((s, a, _, arr) => s + a.successRate / arr.length, 0)
 
   const stats = [
     {
-      label: 'Total Agents',
-      value: String(totalAgents),
-      sub: `${activeAgents} active`,
+      label: 'Total agents',
+      value: String(total),
+      sub: `${active} active`,
       icon: Bot,
-      iconBg: 'bg-blue-50',
-      iconColor: 'text-blue-600',
-      accent: 'border-l-blue-500',
+      color: '#3067db',
+      tint: '#ebf0fc',
+      accent: '#3067db',
     },
     {
-      label: 'Active / Healthy',
-      value: `${activeAgents}/${totalAgents}`,
-      sub: degradedAgents > 0 ? `${degradedAgents} degraded` : 'All systems nominal',
-      icon: degradedAgents > 0 ? AlertTriangle : CheckCircle2,
-      iconBg: degradedAgents > 0 ? 'bg-amber-50' : 'bg-emerald-50',
-      iconColor: degradedAgents > 0 ? 'text-amber-600' : 'text-emerald-600',
-      accent: degradedAgents > 0 ? 'border-l-amber-500' : 'border-l-emerald-500',
+      label: 'Health status',
+      value: `${active}/${total}`,
+      sub: degraded > 0 ? `${degraded} degraded — action needed` : 'All systems nominal',
+      icon: degraded > 0 ? AlertTriangle : CheckCircle2,
+      color: degraded > 0 ? '#985d10' : '#078d79',
+      tint: degraded > 0 ? '#fdf8ec' : '#e6f5f2',
+      accent: degraded > 0 ? '#efc056' : '#078d79',
     },
     {
-      label: 'Tasks Today',
+      label: 'Tasks today',
       value: fmt(todayTasks),
       sub: `${fmt(totalTasks)} total`,
       icon: Zap,
-      iconBg: 'bg-violet-50',
-      iconColor: 'text-violet-600',
-      accent: 'border-l-violet-500',
+      color: '#596ae1',
+      tint: '#eef0fe',
+      accent: '#596ae1',
     },
     {
-      label: 'Avg Success Rate',
+      label: 'Avg success rate',
       value: `${avgSuccess.toFixed(1)}%`,
       sub: 'Across active agents',
       icon: TrendingUp,
-      iconBg: 'bg-teal-50',
-      iconColor: 'text-teal-600',
-      accent: 'border-l-teal-500',
+      color: '#0a9e8a',
+      tint: '#e5f7f5',
+      accent: '#0a9e8a',
     },
     {
-      label: 'Total Value Generated',
+      label: 'Value generated',
       value: `$${fmt(totalSavings)}`,
       sub: `${fmt(totalHours)} hrs saved`,
       icon: DollarSign,
-      iconBg: 'bg-emerald-50',
-      iconColor: 'text-emerald-600',
-      accent: 'border-l-emerald-500',
+      color: '#078d79',
+      tint: '#e6f5f2',
+      accent: '#078d79',
     },
   ]
 
@@ -80,16 +76,25 @@ export default function StatsBar({ agents }: StatsBarProps) {
         return (
           <div
             key={stat.label}
-            className={`bg-white rounded-xl border border-slate-200 border-l-4 ${stat.accent} p-4 shadow-sm`}
+            className="bg-white rounded-evr-md border border-evr-border-decorative p-4"
+            style={{
+              boxShadow: 'var(--evr-shadow-02)',
+              borderLeft: `3px solid ${stat.accent}`,
+            }}
           >
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{stat.label}</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">{stat.value}</p>
-                <p className="text-xs text-slate-400 mt-0.5">{stat.sub}</p>
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold text-evr-text-low uppercase tracking-wider mb-1">
+                  {stat.label}
+                </p>
+                <p className="text-2xl font-bold text-evr-text-high leading-none">{stat.value}</p>
+                <p className="text-[11px] text-evr-text-low mt-1 leading-snug">{stat.sub}</p>
               </div>
-              <div className={`w-9 h-9 rounded-lg ${stat.iconBg} flex items-center justify-center shrink-0`}>
-                <Icon className={stat.iconColor} size={18} />
+              <div
+                className="w-8 h-8 rounded-evr-sm flex items-center justify-center shrink-0"
+                style={{ backgroundColor: stat.tint }}
+              >
+                <Icon size={16} style={{ color: stat.color }} />
               </div>
             </div>
           </div>
