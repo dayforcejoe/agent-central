@@ -85,8 +85,8 @@ export default function Dashboard() {
       {/* Page header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Agent Registry</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Manage, monitor, and govern all AI agents in your Dayforce environment</p>
+          <h1 className="text-2xl font-bold text-evr-text-high">Agents</h1>
+          <p className="text-sm text-evr-text-low mt-0.5">Manage, monitor, and govern all AI agents in your Dayforce environment</p>
         </div>
         <button
           onClick={() => { setAddingNew(true); setEditingAgent(null) }}

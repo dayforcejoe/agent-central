@@ -1,4 +1,4 @@
-import { Bot, CheckCircle2, Zap, TrendingUp, DollarSign, AlertTriangle } from 'lucide-react'
+import { Bot, CheckCircle2, Zap, TrendingUp, AlertTriangle } from 'lucide-react'
 import type { Agent } from '../types/agent'
 
 function fmt(n: number): string {
@@ -12,8 +12,6 @@ export default function StatsBar({ agents }: { agents: Agent[] }) {
   const active = agents.filter(a => a.status === 'active').length
   const degraded = agents.filter(a => a.status === 'degraded').length
   const totalTasks = agents.reduce((s, a) => s + a.totalTasksCompleted, 0)
-  const totalSavings = agents.reduce((s, a) => s + a.totalCostSavings, 0)
-  const totalHours = agents.reduce((s, a) => s + a.totalHoursSaved, 0)
   const todayTasks = agents.reduce((s, a) => {
     const h = a.performanceHistory
     return s + (h.length > 0 ? h[h.length - 1].tasksCompleted : 0)
@@ -58,19 +56,10 @@ export default function StatsBar({ agents }: { agents: Agent[] }) {
       tint: '#e5f7f5',
       accent: '#0a9e8a',
     },
-    {
-      label: 'Value generated',
-      value: `$${fmt(totalSavings)}`,
-      sub: `${fmt(totalHours)} hrs saved`,
-      icon: DollarSign,
-      color: '#078d79',
-      tint: '#e6f5f2',
-      accent: '#078d79',
-    },
   ]
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       {stats.map(stat => {
         const Icon = stat.icon
         return (

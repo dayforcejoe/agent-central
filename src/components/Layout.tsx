@@ -1,19 +1,31 @@
-import { useState, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Search, Bell, ChevronDown, Activity } from 'lucide-react'
+import { Bell, ChevronDown, Activity } from 'lucide-react'
 
 interface LayoutProps { children: ReactNode }
 
-// Dayforce wordmark — recreated from Everest brand guide
-function DayforceWordmark({ size = 'default' }: { size?: 'default' | 'sm' }) {
-  const h = size === 'sm' ? 18 : 22
+// Dayforce "d" brand mark — reproduced from Everest DS (df-logo-blue400.svg geometry)
+function DayforceMark({ size = 24 }: { size?: number }) {
   return (
-    <svg height={h} viewBox="0 0 140 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Dayforce">
-      {/* D mark */}
-      <rect x="0" y="2" width="20" height="24" rx="3" fill="#3067db"/>
-      <text x="3" y="20" fontFamily="'Plus Jakarta Sans', sans-serif" fontWeight="800" fontSize="18" fill="white">D</text>
-      {/* Wordmark */}
-      <text x="26" y="20" fontFamily="'Plus Jakarta Sans', sans-serif" fontWeight="700" fontSize="16" fill="#1f1f23">Dayforce</text>
+    <svg
+      height={size}
+      viewBox="0 0 75 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <defs>
+        <mask id="dfm">
+          {/* Outer d shape */}
+          <circle cx="38" cy="67" r="37" fill="white" />
+          <rect x="57" y="0" width="18" height="67" fill="white" />
+          {/* Counter — circular hole */}
+          <circle cx="38" cy="67" r="19" fill="black" />
+          {/* Notch — top-right corner removed from stem */}
+          <rect x="64" y="0" width="11" height="22" fill="black" />
+        </mask>
+      </defs>
+      <rect x="0" y="0" width="75" height="100" fill="#3067db" mask="url(#dfm)" />
     </svg>
   )
 }
@@ -21,46 +33,44 @@ function DayforceWordmark({ size = 'default' }: { size?: 'default' | 'sm' }) {
 export default function Layout({ children }: LayoutProps) {
   const navigate = useNavigate()
   const location = useLocation()
-  const [searchValue, setSearchValue] = useState('')
 
+  // "Overview" (observability) is the primary tab — listed first
   const navItems = [
-    { label: 'Agent registry', path: '/' },
-    { label: 'Observability', path: '/observability', live: true },
+    { label: 'Overview', path: '/observability', live: true },
+    { label: 'Agents',   path: '/' },
   ]
 
   const isActive = (path: string) =>
     path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
 
+  const isDetailPage = location.pathname.startsWith('/agents/')
+
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--evr-surface-root)' }}>
-      {/* ── Global header — 48px per Everest spec ─────────────────────── */}
-      <header className="bg-white border-b border-evr-border-decorative sticky top-0 z-40"
-        style={{ boxShadow: 'var(--evr-shadow-02)' }}>
+      {/* ── Global header — 48px per Everest spec ───────────────────────── */}
+      <header
+        className="bg-white border-b border-evr-border-decorative sticky top-0 z-40"
+        style={{ boxShadow: 'var(--evr-shadow-02)' }}
+      >
         <div className="max-w-screen-2xl mx-auto px-6 h-12 flex items-center gap-5">
-          {/* Wordmark */}
-          <button onClick={() => navigate('/')} className="shrink-0 flex items-center gap-2 group">
-            <DayforceWordmark />
-            <span className="text-[11px] font-semibold text-evr-text-low border-l border-evr-border-decorative pl-2 leading-none">
-              Agent Central
-            </span>
+
+          {/* Brand lockup: d mark  |  Agent Command Center */}
+          <button
+            onClick={() => navigate('/observability')}
+            className="shrink-0 flex items-center gap-2.5 group"
+            aria-label="Agent Command Center home"
+          >
+            <DayforceMark size={22} />
+            <span className="text-evr-border-subtle text-base leading-none select-none">|</span>
+            <div className="leading-tight">
+              <span className="text-sm font-bold text-evr-text-high tracking-tight group-hover:text-evr-blue-400 transition-colors">
+                Agent Command Center
+              </span>
+            </div>
           </button>
 
-          {/* Search */}
-          <form className="flex-1 max-w-md" onSubmit={e => e.preventDefault()}>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-evr-text-low pointer-events-none" size={14} />
-              <input
-                type="text"
-                value={searchValue}
-                onChange={e => setSearchValue(e.target.value)}
-                placeholder="Search agents…"
-                className="w-full pl-8 pr-3 py-1.5 text-sm border border-evr-border-decorative rounded-evr-sm bg-evr-surface-secondary focus:bg-white focus:outline-none focus:ring-2 focus:ring-evr-blue-400/25 focus:border-evr-blue-400 transition-all placeholder:text-evr-text-low"
-              />
-            </div>
-          </form>
-
           {/* Feature nav */}
-          <nav className="hidden md:flex items-center gap-0.5">
+          <nav className="hidden md:flex items-center gap-0.5 ml-2">
             {navItems.map(item => (
               <button
                 key={item.path}
@@ -82,13 +92,16 @@ export default function Layout({ children }: LayoutProps) {
             ))}
           </nav>
 
+          {/* Right side: notifications + user */}
           <div className="flex items-center gap-1.5 ml-auto shrink-0">
             <button className="relative w-8 h-8 flex items-center justify-center rounded-evr-sm hover:bg-evr-surface-secondary text-evr-text-default transition-colors">
               <Bell size={16} />
               <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-evr-error rounded-full border border-white" />
             </button>
             <button className="flex items-center gap-2 px-2 py-1 rounded-evr-sm hover:bg-evr-surface-secondary transition-colors">
-              <div className="w-6 h-6 rounded-full bg-evr-blue-400 flex items-center justify-center text-white text-[10px] font-bold">SC</div>
+              <div className="w-6 h-6 rounded-full bg-evr-blue-400 flex items-center justify-center text-white text-[10px] font-bold">
+                SC
+              </div>
               <span className="text-sm font-medium text-evr-text-default hidden sm:block">Sarah Chen</span>
               <ChevronDown size={12} className="text-evr-text-low hidden sm:block" />
             </button>
@@ -96,11 +109,16 @@ export default function Layout({ children }: LayoutProps) {
         </div>
       </header>
 
-      {/* Breadcrumb strip — detail pages only */}
-      {location.pathname !== '/' && location.pathname !== '/observability' && (
+      {/* Breadcrumb strip — agent detail only */}
+      {isDetailPage && (
         <div className="bg-white border-b border-evr-border-decorative">
           <div className="max-w-screen-2xl mx-auto px-6 h-9 flex items-center gap-2 text-xs text-evr-text-low">
-            <button onClick={() => navigate('/')} className="hover:text-evr-blue-400 transition-colors">Agent registry</button>
+            <button
+              onClick={() => navigate('/')}
+              className="hover:text-evr-blue-400 transition-colors"
+            >
+              Agents
+            </button>
             <span className="text-evr-border-subtle">/</span>
             <span className="text-evr-text-high font-medium">Agent detail</span>
           </div>
